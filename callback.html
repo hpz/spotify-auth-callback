@@ -4,21 +4,20 @@
   <meta charset="UTF-8">
   <title>Spotify Auth Redirect</title>
   <script>
-    // Parse the access token from the URL fragment
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
     const accessToken = params.get('access_token');
 
-    if (accessToken) {
-      // Store token in localStorage
-      localStorage.setItem('spotify_access_token', accessToken);
+    if (accessToken && window.opener) {
+      // Send token back to the opener window
+      window.opener.postMessage({ type: 'SPOTIFY_TOKEN', token: accessToken }, '*');
+      window.close();
+    } else {
+      document.body.innerHTML = '<p>Authentication failed or no opener window.</p>';
     }
-
-    // Redirect back to xmplaylist.com
-    window.location.href = 'https://xmplaylist.com';
   </script>
 </head>
 <body>
-  <p>Redirecting...</p>
+  <p>Authenticating with Spotify...</p>
 </body>
 </html>
